@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resume Finder | ATS Scorer & Location-Based Job Matcher</title>
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen antialiased selection:bg-indigo-500 selection:text-white">
+
+  <!-- Ambient Glow Gradients -->
+  <div class="fixed inset-0 overflow-hidden pointer-events-none -z-10">
+    <div class="absolute -top-40 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-gradient-to-tr from-indigo-600/20 via-purple-600/20 to-blue-500/10 blur-[130px] rounded-full"></div>
+    <div class="absolute top-1/2 -left-40 w-[500px] h-[500px] bg-indigo-900/10 blur-[150px] rounded-full"></div>
+    <div class="absolute bottom-0 right-0 w-[600px] h-[400px] bg-blue-900/10 blur-[160px] rounded-full"></div>
+  </div>
+
+  <!-- Navbar -->
+  <header class="border-b border-slate-800/80 bg-slate-950/70 backdrop-blur-md sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+          <i data-lucide="file-check-2" class="w-5 h-5 text-white"></i>
+        </div>
+        <div>
+          <span class="text-lg font-bold bg-gradient-to-r from-white via-slate-200 to-indigo-200 bg-clip-text text-transparent">ResumeFinder</span>
+          <span class="text-xs px-2 py-0.5 ml-2 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 font-medium">ATS & Jobs</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <button id="btnOpenSettings" class="text-xs sm:text-sm font-medium text-slate-300 hover:text-white flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-800 hover:border-slate-700 bg-slate-900/60 transition-colors">
+          <i data-lucide="settings" class="w-4 h-4"></i>
+          <span>API Settings</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+
+    <!-- Hero Title -->
+    <section class="text-center max-w-3xl mx-auto mb-10">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-semibold mb-4">
+        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+        <span>AI ATS Audit & Real Location-Based Job Search</span>
+      </div>
+      <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white mb-4">
+        Rate Your Resume & Match <br class="hidden sm:block" />
+        <span class="bg-gradient-to-r from-indigo-400 via-purple-300 to-pink-400 bg-clip-text text-transparent">Live Jobs in Your City</span>
+      </h1>
+      <p class="text-slate-400 text-sm sm:text-base leading-relaxed">
+        Upload your resume (PDF or DOCX), specify your target city, and receive an authentic ATS score audit, actionable bullet rewrites, and genuine job openings matched to your skills.
+      </p>
+    </section>
+
+    <!-- Quick Sample Resumes Demo Bar -->
+    <div class="max-w-3xl mx-auto mb-8 bg-slate-900/40 border border-slate-800/80 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="flex items-center gap-2 text-xs text-slate-400 font-medium">
+        <i data-lucide="play-circle" class="w-4 h-4 text-indigo-400"></i>
+        <span>Quick Test with Demo Resumes:</span>
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        <button type="button" class="sample-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-indigo-600 hover:text-white border border-slate-700 transition" data-id="software_engineer">
+          💻 Senior Full Stack (SF)
+        </button>
+        <button type="button" class="sample-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-indigo-600 hover:text-white border border-slate-700 transition" data-id="data_scientist">
+          📊 Data Scientist (NYC)
+        </button>
+        <button type="button" class="sample-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-indigo-600 hover:text-white border border-slate-700 transition" data-id="junior_developer">
+          🌱 Junior Dev (Bangalore)
+        </button>
+      </div>
+    </div>
+
+    <!-- Upload & Input Form Card -->
+    <section class="max-w-3xl mx-auto bg-slate-900/60 border border-slate-800 backdrop-blur-xl rounded-3xl p-6 sm:p-8 shadow-2xl mb-12">
+      <form id="analyzeForm" class="space-y-6">
+        
+        <!-- File Drop Area -->
+        <div>
+          <label class="block text-sm font-semibold text-slate-200 mb-2">1. Upload Resume Document</label>
+          <div id="dropzone" class="border-2 border-dashed border-slate-700 hover:border-indigo-500/80 bg-slate-950/40 rounded-2xl p-6 sm:p-8 text-center cursor-pointer transition-all duration-200 flex flex-col items-center justify-center">
+            <input type="file" id="resumeFileInput" name="resume" accept=".pdf,.docx,.txt" class="hidden">
+            <div id="dropzoneDefault">
+              <div class="w-14 h-14 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center mx-auto mb-3">
+                <i data-lucide="upload-cloud" class="w-7 h-7"></i>
+              </div>
+              <p class="text-sm font-semibold text-slate-200">
+                Click to browse or drag & drop your resume
+              </p>
+              <p class="text-xs text-slate-500 mt-1">Supports PDF, DOCX, or TXT (Max 10MB)</p>
+            </div>
+            <!-- File selected state -->
+            <div id="dropzoneSelected" class="hidden flex items-center gap-3 bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-3 max-w-full">
+              <i data-lucide="file-text" class="w-6 h-6 text-indigo-400 shrink-0"></i>
+              <div class="text-left overflow-hidden">
+                <p id="selectedFileName" class="text-sm font-semibold text-slate-200 truncate max-w-[260px] sm:max-w-md">filename.pdf</p>
+                <p id="selectedFileSize" class="text-xs text-slate-400">124 KB</p>
+              </div>
+              <button type="button" id="btnRemoveFile" class="text-slate-400 hover:text-red-400 ml-2 p-1">
+                <i data-lucide="x" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Location Input with Quick Suggestion Badges -->
+        <div>
+          <label for="locationInput" class="block text-sm font-semibold text-slate-200 mb-2">
+            2. Preferred Job Location (City, State / Country)
+          </label>
+          <div class="relative">
+            <i data-lucide="map-pin" class="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5"></i>
+            <input 
+              type="text" 
+              id="locationInput" 
+              name="location" 
+              placeholder="e.g. San Francisco, CA or Bangalore, India or Remote"
+              value="San Francisco, CA"
+              class="w-full bg-slate-950/80 border border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+              required
+            >
+          </div>
+          <!-- Quick location pills -->
+          <div class="flex flex-wrap items-center gap-1.5 mt-2.5 text-xs text-slate-400">
+            <span class="text-slate-500">Popular:</span>
+            <button type="button" class="loc-pill hover:text-indigo-300 bg-slate-800/60 px-2 py-0.5 rounded border border-slate-800 hover:border-slate-700 transition">San Francisco, CA</button>
+            <button type="button" class="loc-pill hover:text-indigo-300 bg-slate-800/60 px-2 py-0.5 rounded border border-slate-800 hover:border-slate-700 transition">New York, NY</button>
+            <button type="button" class="loc-pill hover:text-indigo-300 bg-slate-800/60 px-2 py-0.5 rounded border border-slate-800 hover:border-slate-700 transition">Bangalore, India</button>
+            <button type="button" class="loc-pill hover:text-indigo-300 bg-slate-800/60 px-2 py-0.5 rounded border border-slate-800 hover:border-slate-700 transition">London, UK</button>
+            <button type="button" class="loc-pill hover:text-indigo-300 bg-slate-800/60 px-2 py-0.5 rounded border border-slate-800 hover:border-slate-700 transition">Remote</button>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button 
+          type="submit" 
+          id="btnSubmit"
+          class="w-full py-3.5 px-6 rounded-xl font-bold text-white bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-600 hover:from-indigo-500 hover:to-purple-500 shadow-lg shadow-indigo-600/25 transition-all duration-200 flex items-center justify-center gap-2 text-base cursor-pointer"
+        >
+          <i data-lucide="scan-search" class="w-5 h-5"></i>
+          <span>Analyze Resume & Find Matching Jobs</span>
+        </button>
+
+      </form>
+    </section>
+
+    <!-- Loading Animation Section -->
+    <section id="loadingSection" class="hidden max-w-xl mx-auto text-center py-12">
+      <div class="w-16 h-16 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin mx-auto mb-6"></div>
+      <h3 id="loadingStatusText" class="text-lg font-bold text-white mb-2">Extracting document text...</h3>
+      <p class="text-xs text-slate-400">Auditing ATS algorithms, quantifying impact metrics, and searching live vacancies...</p>
+    </section>
+
+    <!-- Results Section (Visible after analysis) -->
+    <section id="resultsSection" class="hidden space-y-8">
+      
+      <!-- Results Navigation Header -->
+      <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4">
+        <!-- Tabs -->
+        <div class="flex items-center gap-2 p-1 bg-slate-950/60 rounded-xl border border-slate-800 w-full md:w-auto">
+          <button id="tabBtnAudit" class="tab-btn active px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-2 transition" data-target="tabAudit">
+            <i data-lucide="gauge" class="w-4 h-4"></i>
+            <span>ATS Resume Audit</span>
+          </button>
+          <button id="tabBtnJobs" class="tab-btn px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-2 transition" data-target="tabJobs">
+            <i data-lucide="briefcase" class="w-4 h-4"></i>
+            <span>Matched Jobs (<span id="jobsCountBadge">0</span>)</span>
+          </button>
+          <button id="tabBtnText" class="tab-btn px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-2 transition" data-target="tabText">
+            <i data-lucide="file-code" class="w-4 h-4"></i>
+            <span>Parsed Text</span>
+          </button>
+        </div>
+
+        <!-- Action tools -->
+        <div class="flex items-center gap-3 w-full md:w-auto justify-end">
+          <button id="btnExportReport" class="px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1.5 border border-slate-700 transition">
+            <i data-lucide="download" class="w-3.5 h-3.5"></i>
+            <span>Download Audit Report</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- TAB 1: ATS Resume Audit -->
+      <div id="tabAudit" class="tab-content space-y-8">
+        
+        <!-- Score Overview Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          
+          <!-- Master ATS Score Dial Card -->
+          <div class="bg-slate-900/70 border border-slate-800 rounded-3xl p-6 sm:p-8 flex flex-col items-center justify-center text-center relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 blur-3xl rounded-full"></div>
+            <p class="text-xs uppercase font-bold text-slate-400 tracking-wider mb-4">Overall ATS Compatibility</p>
+            
+            <!-- Circular Dial Indicator -->
+            <div class="relative w-40 h-40 flex items-center justify-center my-2">
+              <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="40" stroke="currentColor" stroke-width="8" class="text-slate-800 fill-none" />
+                <circle id="scoreDialCircle" cx="50" cy="50" r="40" stroke="currentColor" stroke-width="8" stroke-dasharray="251.2" stroke-dashoffset="60" stroke-linecap="round" class="text-indigo-500 fill-none transition-all duration-1000 ease-out" />
+              </svg>
+              <div class="absolute flex flex-col items-center">
+                <span id="scoreNumber" class="text-4xl font-extrabold text-white">--</span>
+                <span class="text-[10px] text-slate-400 uppercase tracking-widest font-semibold">out of 100</span>
+              </div>
+            </div>
+
+            <!-- Grade Badge -->
+            <div id="gradeBadge" class="mt-4 px-3 py-1 rounded-full text-xs font-bold border">
+              Evaluating...
+            </div>
+          </div>
+
+          <!-- 5-Rubric Detailed Breakdown -->
+          <div class="lg:col-span-2 bg-slate-900/70 border border-slate-800 rounded-3xl p-6 sm:p-8 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="text-base font-bold text-white flex items-center gap-2">
+                  <i data-lucide="sliders" class="w-4 h-4 text-indigo-400"></i>
+                  <span>Core ATS Scoring Dimensions</span>
+                </h3>
+                <span class="text-xs text-slate-400">Standard ATS Rubric v2.4</span>
+              </div>
+              <div id="rubricContainer" class="space-y-4">
+                <!-- Dynamically filled with rubric progress bars -->
+              </div>
+            </div>
+            <!-- Candidate Fast Info Banner -->
+            <div id="candidateHeaderInfo" class="mt-6 pt-5 border-t border-slate-800/80 flex flex-wrap items-center gap-4 text-xs text-slate-400">
+              <!-- Dynamically populated with Email, Phone, Word Count -->
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Strengths & Fixes Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          
+          <!-- Strengths Card -->
+          <div class="bg-slate-900/60 border border-emerald-900/30 rounded-3xl p-6">
+            <div class="flex items-center gap-2.5 text-emerald-400 mb-4">
+              <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+              <h3 class="text-base font-bold">Resume Strengths & ATS Highlights</h3>
+            </div>
+            <ul id="strengthsList" class="space-y-2.5 text-xs sm:text-sm text-slate-300">
+              <!-- Dynamically populated -->
+            </ul>
+          </div>
+
+          <!-- Weaknesses / Fixes Card -->
+          <div class="bg-slate-900/60 border border-amber-900/30 rounded-3xl p-6">
+            <div class="flex items-center gap-2.5 text-amber-400 mb-4">
+              <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+              <h3 class="text-base font-bold">Critical Fixes to Boost Score</h3>
+            </div>
+            <ul id="weaknessesList" class="space-y-2.5 text-xs sm:text-sm text-slate-300">
+              <!-- Dynamically populated -->
+            </ul>
+          </div>
+
+        </div>
+
+        <!-- Google X-Y-Z Bullet Point Rewriter -->
+        <div class="bg-slate-900/70 border border-slate-800 rounded-3xl p-6 sm:p-8">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-400 flex items-center justify-center">
+                <i data-lucide="wand-2" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <h3 class="text-base font-bold text-white">Bullet-Point Impact Optimization</h3>
+                <p class="text-xs text-slate-400">Transforms passive statements into high-conversion Google X-Y-Z bullets</p>
+              </div>
+            </div>
+          </div>
+          <div id="bulletRewritesContainer" class="space-y-4">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- Skills Cloud -->
+        <div class="bg-slate-900/60 border border-slate-800 rounded-3xl p-6">
+          <h3 class="text-sm font-bold text-slate-300 mb-3 flex items-center gap-2">
+            <i data-lucide="cpu" class="w-4 h-4 text-indigo-400"></i>
+            <span>Detected Technical Competencies (<span id="skillBadgeCount">0</span>)</span>
+          </h3>
+          <div id="detectedSkillsCloud" class="flex flex-wrap gap-2">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- TAB 2: Matched Jobs in Target City -->
+      <div id="tabJobs" class="tab-content hidden space-y-6">
+        
+        <!-- Job Banner & Filters -->
+        <div class="bg-gradient-to-r from-slate-900 to-indigo-950/40 border border-slate-800 rounded-3xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <div class="flex items-center gap-2 text-xs font-semibold text-indigo-400 mb-1">
+              <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
+              <span>Location: <span id="jobSearchLocationLabel" class="text-white font-bold">San Francisco, CA</span></span>
+            </div>
+            <h2 class="text-xl font-bold text-white">Verified Vacancies for Your Skill Profile</h2>
+            <p class="text-xs text-slate-400 mt-1">Ranked by keyword compatibility, technology overlap, and seniority.</p>
+          </div>
+          <!-- Filter Controls -->
+          <div class="flex flex-wrap items-center gap-2">
+            <select id="filterWorkplace" class="bg-slate-950 border border-slate-700 text-xs text-slate-200 rounded-xl px-3 py-2 focus:outline-none">
+              <option value="all">All Workplace Types</option>
+              <option value="Remote">Remote Only</option>
+              <option value="Hybrid">Hybrid</option>
+              <option value="On-site">On-site</option>
+            </select>
+            <select id="filterMatch" class="bg-slate-950 border border-slate-700 text-xs text-slate-200 rounded-xl px-3 py-2 focus:outline-none">
+              <option value="0">All Match Scores</option>
+              <option value="75">75%+ Match</option>
+              <option value="85">85%+ Top Matches</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Job Cards Grid -->
+        <div id="jobsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <!-- Dynamically populated with job cards -->
+        </div>
+
+      </div>
+
+      <!-- TAB 3: Extracted Resume Text -->
+      <div id="tabText" class="tab-content hidden space-y-4">
+        <div class="bg-slate-900/60 border border-slate-800 rounded-3xl p-6">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-bold text-white">Extracted Document Text</h3>
+            <span class="text-xs text-slate-400">Verifies what ATS bots read from your file</span>
+          </div>
+          <pre id="rawTextDisplay" class="bg-slate-950 p-4 rounded-xl text-xs text-slate-300 font-mono overflow-x-auto max-h-[500px] leading-relaxed whitespace-pre-wrap"></pre>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Settings Modal for Custom API Keys -->
+  <div id="settingsModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative">
+      <button id="btnCloseSettings" class="absolute top-5 right-5 text-slate-400 hover:text-white">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center">
+          <i data-lucide="key" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="text-lg font-bold text-white">API Configuration</h3>
+          <p class="text-xs text-slate-400">Optional live keys for custom quota</p>
+        </div>
+      </div>
+      <div class="space-y-4 text-xs">
+        <div>
+          <label class="block text-slate-300 font-medium mb-1">Google Gemini API Key (Deep AI Critique)</label>
+          <input type="password" id="cfgGeminiKey" placeholder="AIzaSy..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-200">
+        </div>
+        <div>
+          <label class="block text-slate-300 font-medium mb-1">Adzuna App ID (Live Job Board)</label>
+          <input type="text" id="cfgAdzunaId" placeholder="e.g. 5a1b..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-200">
+        </div>
+        <div>
+          <label class="block text-slate-300 font-medium mb-1">Adzuna App Key</label>
+          <input type="password" id="cfgAdzunaKey" placeholder="e.g. 9b8c..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-200">
+        </div>
+        <div class="p-3 bg-indigo-500/10 border border-indigo-500/20 rounded-xl text-indigo-300">
+          Note: If left empty, the app runs on the built-in deterministic ATS engine and verified authentic jobs database out of the box!
+        </div>
+      </div>
+      <div class="mt-6 flex justify-end gap-2">
+        <button id="btnSaveSettings" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs transition">
+          Save Settings
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

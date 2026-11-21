@@ -1,0 +1,67 @@
+/* Global Styling and Custom Components */
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #020617;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* Tab Button Styles */
+.tab-btn.active {
+  background-color: #4f46e5;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+}
+.tab-btn:not(.active) {
+  color: #94a3b8;
+}
+.tab-btn:not(.active):hover {
+  color: #f8fafc;
+  background-color: rgba(30, 41, 59, 0.5);
+}
+
+/* Circular Score Animation */
+#scoreDialCircle {
+  transition: stroke-dashoffset 1.2s cubic-bezier(0.16, 1, 0.3, 1), stroke 0.5s ease;
+}
+
+/* Grade Color Badges */
+.badge-green {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #34d399;
+  border-color: rgba(16, 185, 129, 0.3);
+}
+.badge-blue {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: #60a5fa;
+  border-color: rgba(59, 130, 246, 0.3);
+}
+.badge-amber {
+  background-color: rgba(245, 158, 11, 0.1);
+  color: #fbbf24;
+  border-color: rgba(245, 158, 11, 0.3);
+}
+.badge-red {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+/* Drag & Drop Highlight */
+#dropzone.dragover {
+  border-color: #6366f1;
+  background-color: rgba(79, 70, 229, 0.08);
+}
