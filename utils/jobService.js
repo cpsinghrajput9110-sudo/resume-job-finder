@@ -8,16 +8,32 @@
 
 // Helper to construct direct 1-click job application deep links
 function buildDirectJobLinks(title, company, location) {
-  const qStr = `${title} ${company}`.trim();
-  const locStr = location.trim();
+  // Strip parenthetical text like (React.js), (Next.js), symbols, and dashes
+  const cleanTitle = (title || "Software Engineer")
+    .replace(/\([^)]*\)/g, '')
+    .replace(/[-–—/]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  // Extract clean city name, e.g. "Bangalore, India" -> "Bangalore"
+  const cleanLoc = (location || "Remote").split(',')[0].trim();
+  const cleanComp = (company || "").trim();
+
+  // Google Jobs query optimized without broken syntax words
+  const gJobsQuery = cleanComp && cleanLoc.toLowerCase() !== "remote"
+    ? `${cleanTitle} ${cleanComp} ${cleanLoc}`
+    : `${cleanTitle} ${cleanLoc}`;
+
+  // General search URL for all active openings of this role in that city
+  const gJobsGeneralQuery = cleanLoc.toLowerCase() !== "remote"
+    ? `${cleanTitle} in ${cleanLoc}`
+    : `${cleanTitle} remote`;
 
   return {
-    // Direct Google Jobs 1-click apply link
-    directApplyUrl: `https://www.google.com/search?q=${encodeURIComponent(title + " " + company + " in " + locStr + " jobs apply")}&ibp=htl;jobs`,
-    // Direct LinkedIn live application search
-    linkedInUrl: `https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(qStr)}&location=${encodeURIComponent(locStr)}`,
-    // Direct Indeed live application search
-    indeedUrl: `https://www.indeed.com/jobs?q=${encodeURIComponent(qStr)}&l=${encodeURIComponent(locStr)}`
+    directApplyUrl: `https://www.google.com/search?q=${encodeURIComponent(gJobsQuery)}&ibp=htl;jobs`,
+    generalGoogleJobsUrl: `https://www.google.com/search?q=${encodeURIComponent(gJobsGeneralQuery)}&ibp=htl;jobs`,
+    linkedInUrl: `https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(cleanTitle + (cleanComp ? " " + cleanComp : ""))}&location=${encodeURIComponent(cleanLoc)}`,
+    indeedUrl: `https://www.indeed.com/jobs?q=${encodeURIComponent(cleanTitle + (cleanComp ? " " + cleanComp : ""))}&l=${encodeURIComponent(cleanLoc)}`
   };
 }
 
@@ -372,14 +388,16 @@ async function getRecommendedJobs({ candidateSkills = [], candidateRole = "", lo
 
   // Global direct platform links for the candidate's exact role in their chosen city
   const isIndia = locLower.includes("india") || locLower.includes("bangalore") || locLower.includes("delhi") || locLower.includes("hyderabad") || locLower.includes("pune") || locLower.includes("mumbai");
+  const cleanRole = (effectiveRole || "Software Engineer").replace(/[\/]/g, ' ').replace(/\s+/g, ' ').trim();
+  const cleanCity = searchCity || "Remote";
   
   const livePlatformLinks = {
     role: effectiveRole,
     location: location || "Remote",
-    googleJobs: `https://www.google.com/search?q=${encodeURIComponent(effectiveRole + " jobs in " + (location || "Remote") + " apply")}&ibp=htl;jobs`,
-    linkedIn: `https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(effectiveRole)}&location=${encodeURIComponent(location || "Remote")}`,
-    indeed: `https://www.indeed.com/jobs?q=${encodeURIComponent(effectiveRole)}&l=${encodeURIComponent(location || "Remote")}`,
-    naukri: isIndia ? `https://www.naukri.com/${encodeURIComponent(effectiveRole.toLowerCase().replace(/[\s\/]+/g, '-'))}-jobs-in-${encodeURIComponent(searchCity.replace(/\s+/g, '-'))}` : null
+    googleJobs: `https://www.google.com/search?q=${encodeURIComponent(cleanRole + " " + cleanCity)}&ibp=htl;jobs`,
+    linkedIn: `https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(cleanRole)}&location=${encodeURIComponent(cleanCity)}`,
+    indeed: `https://www.indeed.com/jobs?q=${encodeURIComponent(cleanRole)}&l=${encodeURIComponent(cleanCity)}`,
+    naukri: isIndia ? `https://www.naukri.com/${encodeURIComponent(cleanRole.toLowerCase().replace(/[\s\/]+/g, '-'))}-jobs-in-${encodeURIComponent(cleanCity.replace(/\s+/g, '-'))}` : null
   };
 
   return {
