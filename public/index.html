@@ -328,6 +328,17 @@
           </div>
         </div>
 
+        <!-- Live Direct Platform Search Quick Bar -->
+        <div id="liveSearchBanner" class="bg-indigo-950/40 border border-indigo-800/40 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+          <div class="flex items-center gap-2 text-indigo-300 font-semibold">
+            <i data-lucide="search" class="w-4 h-4 text-indigo-400 shrink-0"></i>
+            <span>Browse All Live Postings for <strong id="liveRoleLabel" class="text-white">Role</strong> in <strong id="liveCityLabel" class="text-white">City</strong>:</span>
+          </div>
+          <div id="platformLinksContainer" class="flex flex-wrap items-center gap-2">
+            <!-- Dynamically populated with LinkedIn, Google Jobs, Indeed buttons -->
+          </div>
+        </div>
+
         <!-- Job Cards Grid -->
         <div id="jobsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-5">
           <!-- Dynamically populated with job cards -->

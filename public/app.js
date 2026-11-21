@@ -372,6 +372,37 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('jobsCountBadge').textContent = jobs.totalJobsFound || 0;
     document.getElementById('jobSearchLocationLabel').textContent = jobs.searchLocation || data.preferredLocation;
 
+    // Render Live Platform Search Bar
+    const liveRoleLabel = document.getElementById('liveRoleLabel');
+    const liveCityLabel = document.getElementById('liveCityLabel');
+    const platformLinksContainer = document.getElementById('platformLinksContainer');
+
+    if (jobs.livePlatformLinks && liveRoleLabel && platformLinksContainer) {
+      liveRoleLabel.textContent = jobs.livePlatformLinks.role;
+      liveCityLabel.textContent = jobs.livePlatformLinks.location;
+      
+      platformLinksContainer.innerHTML = `
+        <a href="${jobs.livePlatformLinks.googleJobs}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-indigo-600/80 hover:bg-indigo-500 text-white font-medium flex items-center gap-1 transition">
+          <span>Google Jobs</span>
+          <i data-lucide="external-link" class="w-3 h-3"></i>
+        </a>
+        <a href="${jobs.livePlatformLinks.linkedIn}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-blue-600/80 hover:bg-blue-500 text-white font-medium flex items-center gap-1 transition">
+          <span>LinkedIn</span>
+          <i data-lucide="external-link" class="w-3 h-3"></i>
+        </a>
+        <a href="${jobs.livePlatformLinks.indeed}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-medium flex items-center gap-1 transition">
+          <span>Indeed</span>
+          <i data-lucide="external-link" class="w-3 h-3"></i>
+        </a>
+        ${jobs.livePlatformLinks.naukri ? `
+          <a href="${jobs.livePlatformLinks.naukri}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-amber-600/80 hover:bg-amber-500 text-white font-medium flex items-center gap-1 transition">
+            <span>Naukri</span>
+            <i data-lucide="external-link" class="w-3 h-3"></i>
+          </a>
+        ` : ''}
+      `;
+    }
+
     renderJobCards(jobs.jobs || []);
 
     // 9. Raw Text Preview
@@ -475,16 +506,42 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
         </div>
 
-        <!-- Apply Button -->
-        <a 
-          href="${job.applyUrl}" 
-          target="_blank" 
-          rel="noopener noreferrer" 
-          class="w-full py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-slate-800 hover:bg-indigo-600 border border-slate-700 hover:border-indigo-500 flex items-center justify-center gap-2 transition-all duration-200 shadow-sm"
-        >
-          <span>Apply on Official Site</span>
-          <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-        </a>
+        <!-- Action Buttons: Direct 1-Click Apply & Platform Links -->
+        <div class="space-y-2 pt-2 border-t border-slate-800/80">
+          <!-- Primary 1-Click Apply Button -->
+          <a 
+            href="${job.directApplyUrl || job.applyUrl}" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            class="w-full py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 flex items-center justify-center gap-2 transition-all duration-200 shadow-md shadow-indigo-600/20"
+          >
+            <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-300"></i>
+            <span>1-Click Apply (Google Jobs & Direct)</span>
+            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+          </a>
+
+          <!-- Secondary Direct Platform Buttons -->
+          <div class="grid grid-cols-2 gap-2 text-[11px]">
+            <a 
+              href="${job.linkedInUrl}" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              class="py-1.5 px-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700/80 flex items-center justify-center gap-1.5 transition"
+            >
+              <i data-lucide="external-link" class="w-3 h-3 text-blue-400"></i>
+              <span>LinkedIn</span>
+            </a>
+            <a 
+              href="${job.companyCareersUrl || job.applyUrl}" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              class="py-1.5 px-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700/80 flex items-center justify-center gap-1.5 transition"
+            >
+              <i data-lucide="building" class="w-3 h-3 text-purple-400"></i>
+              <span>Company Site</span>
+            </a>
+          </div>
+        </div>
       `;
 
       jobsGrid.appendChild(card);

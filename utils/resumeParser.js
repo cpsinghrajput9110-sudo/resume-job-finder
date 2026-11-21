@@ -1,5 +1,56 @@
-const pdfParse = require('pdf-parse');
+const pdfModule = require('pdf-parse');
 const mammoth = require('mammoth');
+
+/**
+ * Robust PDF text extraction supporting both pdf-parse v2 (class API) and v1 (function API)
+ */
+async function extractPdfText(buffer) {
+  // 1. Try pdf-parse v2 Class API (PDFParse)
+  if (pdfModule && pdfModule.PDFParse) {
+    try {
+      const parser = new pdfModule.PDFParse({ data: buffer });
+      const result = await parser.getText();
+      await parser.destroy();
+      if (result && result.text && result.text.trim().length > 0) {
+        return result.text;
+      }
+    } catch (err) {
+      console.warn("pdf-parse v2 parsing failed, trying fallback:", err.message);
+    }
+  }
+
+  // 2. Try legacy function API if available
+  if (typeof pdfModule === 'function') {
+    try {
+      const data = await pdfModule(buffer);
+      if (data && data.text && data.text.trim().length > 0) {
+        return data.text;
+      }
+    } catch (err) {
+      console.warn("pdf-parse legacy function failed, trying fallback:", err.message);
+    }
+  }
+
+  // 3. Fallback: extract ASCII / UTF-8 text streams from raw PDF buffer
+  try {
+    const rawStr = buffer.toString('binary');
+    const textMatches = [];
+    const streamRegex = /\(([^)]+)\)\s*Tj/g;
+    let match;
+    while ((match = streamRegex.exec(rawStr)) !== null) {
+      if (match[1] && match[1].trim().length > 1) {
+        textMatches.push(match[1]);
+      }
+    }
+    if (textMatches.length > 5) {
+      return textMatches.join(' ');
+    }
+  } catch (err) {
+    // Ignore fallback errors
+  }
+
+  throw new Error("Could not extract readable text from this PDF. Please verify that the PDF contains selectable text and is not an image-only scan or encrypted.");
+}
 
 // Comprehensive dictionary of technical & professional skills for extraction
 const KNOWN_SKILLS = [
@@ -53,8 +104,7 @@ async function extractTextFromBuffer(buffer, mimeType, filename = "") {
   const lowerName = filename.toLowerCase();
 
   if (mimeType === 'application/pdf' || lowerName.endsWith('.pdf')) {
-    const data = await pdfParse(buffer);
-    return data.text || "";
+    return await extractPdfText(buffer);
   } 
   
   if (
