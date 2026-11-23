@@ -132,7 +132,24 @@ function parseResume(rawText) {
   const linkedinMatch = cleanedText.match(/linkedin\.com\/in\/[a-zA-Z0-9_-]+/i);
   const githubMatch = cleanedText.match(/github\.com\/[a-zA-Z0-9_-]+/i);
 
+  // Extract candidate name from top lines
+  let detectedName = "";
+  for (const line of lines.slice(0, 4)) {
+    const stripped = line.replace(/[^a-zA-Z\s]/g, '').trim();
+    if (
+      stripped.length > 2 &&
+      stripped.length < 35 &&
+      !line.includes('@') &&
+      !line.includes('http') &&
+      !/resume|curriculum|vitae|page|profile|summary|contact|phone|email/i.test(line)
+    ) {
+      detectedName = stripped;
+      break;
+    }
+  }
+
   const contact = {
+    name: detectedName || "Candidate",
     email: emailMatch ? emailMatch[0] : null,
     phone: phoneMatch ? phoneMatch[0] : null,
     linkedin: linkedinMatch ? linkedinMatch[0] : null,

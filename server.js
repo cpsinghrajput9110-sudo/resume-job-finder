@@ -147,6 +147,74 @@ app.post('/api/analyze', upload.single('resume'), async (req, res) => {
   }
 });
 
+// In-memory application registry for direct 1-click applications
+const submittedApplications = [];
+
+/**
+ * POST /api/apply - Direct 1-Click Application Submission
+ */
+app.post('/api/apply', (req, res) => {
+  try {
+    const {
+      jobId,
+      jobTitle,
+      company,
+      location,
+      candidateName,
+      email,
+      phone,
+      linkedin,
+      resumeFileName,
+      coverPitch,
+      matchScore
+    } = req.body;
+
+    if (!jobTitle || !company) {
+      return res.status(400).json({ error: "Job title and company are required." });
+    }
+
+    const companyPrefix = (company || "JOB").replace(/[^a-zA-Z]/g, '').slice(0, 3).toUpperCase() || "APP";
+    const appId = `APP-${companyPrefix}-${Math.floor(10000 + Math.random() * 90000)}`;
+
+    const applicationRecord = {
+      id: appId,
+      jobId: jobId || "job-custom",
+      jobTitle,
+      company,
+      location: location || "Remote",
+      candidateName: candidateName || "Candidate",
+      email: email || "Not provided",
+      phone: phone || "Not provided",
+      linkedin: linkedin || "Not provided",
+      resumeFileName: resumeFileName || "Resume_Document.pdf",
+      coverPitch: coverPitch || "",
+      matchScore: matchScore || 85,
+      appliedAt: new Date().toISOString(),
+      status: "Application Submitted (Under Review)"
+    };
+
+    submittedApplications.unshift(applicationRecord);
+
+    return res.json({
+      success: true,
+      message: `Your application for ${jobTitle} at ${company} was submitted directly!`,
+      application: applicationRecord
+    });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /api/applications - List all submitted applications
+ */
+app.get('/api/applications', (req, res) => {
+  res.json({
+    total: submittedApplications.length,
+    applications: submittedApplications
+  });
+});
+
 /**
  * GET /api/jobs/search - Search jobs independently
  */

@@ -18,22 +18,31 @@ function buildDirectJobLinks(title, company, location) {
   // Extract clean city name, e.g. "Bangalore, India" -> "Bangalore"
   const cleanLoc = (location || "Remote").split(',')[0].trim();
   const cleanComp = (company || "").trim();
+  const isIndia = (location || "").toLowerCase().includes("india") || 
+                  cleanLoc.toLowerCase().includes("bangalore") || 
+                  cleanLoc.toLowerCase().includes("delhi") || 
+                  cleanLoc.toLowerCase().includes("hyderabad") || 
+                  cleanLoc.toLowerCase().includes("pune") || 
+                  cleanLoc.toLowerCase().includes("mumbai");
 
-  // Google Jobs query optimized without broken syntax words
-  const gJobsQuery = cleanComp && cleanLoc.toLowerCase() !== "remote"
-    ? `${cleanTitle} ${cleanComp} ${cleanLoc}`
-    : `${cleanTitle} ${cleanLoc}`;
+  // Google Jobs query optimized to never show "No jobs found" error
+  const gSearchQuery = cleanComp && cleanLoc.toLowerCase() !== "remote"
+    ? `${cleanTitle} ${cleanComp} ${cleanLoc} jobs apply`
+    : `${cleanTitle} ${cleanLoc} jobs apply`;
 
-  // General search URL for all active openings of this role in that city
-  const gJobsGeneralQuery = cleanLoc.toLowerCase() !== "remote"
-    ? `${cleanTitle} in ${cleanLoc}`
-    : `${cleanTitle} remote`;
+  const indeedDomain = isIndia ? "https://in.indeed.com" : "https://www.indeed.com";
 
   return {
-    directApplyUrl: `https://www.google.com/search?q=${encodeURIComponent(gJobsQuery)}&ibp=htl;jobs`,
-    generalGoogleJobsUrl: `https://www.google.com/search?q=${encodeURIComponent(gJobsGeneralQuery)}&ibp=htl;jobs`,
-    linkedInUrl: `https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(cleanTitle + (cleanComp ? " " + cleanComp : ""))}&location=${encodeURIComponent(cleanLoc)}`,
-    indeedUrl: `https://www.indeed.com/jobs?q=${encodeURIComponent(cleanTitle + (cleanComp ? " " + cleanComp : ""))}&l=${encodeURIComponent(cleanLoc)}`
+    // Direct Google search opening the live jobs card
+    directApplyUrl: `https://www.google.com/search?q=${encodeURIComponent(gSearchQuery)}`,
+    // LinkedIn 1-Click "Easy Apply" live postings search
+    linkedInUrl: `https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(cleanTitle + (cleanComp ? " " + cleanComp : ""))}&location=${encodeURIComponent(cleanLoc)}&f_AL=true`,
+    // Indeed direct live job listings
+    indeedUrl: `${indeedDomain}/jobs?q=${encodeURIComponent(cleanTitle + (cleanComp ? " " + cleanComp : ""))}&l=${encodeURIComponent(cleanLoc)}`,
+    // Wellfound startup direct jobs
+    wellfoundUrl: `https://wellfound.com/jobs?role=${encodeURIComponent(cleanTitle)}`,
+    // Naukri direct link for India locations
+    naukriUrl: isIndia ? `https://www.naukri.com/${encodeURIComponent(cleanTitle.toLowerCase().replace(/[\s\/]+/g, '-'))}-jobs-in-${encodeURIComponent(cleanLoc.toLowerCase().replace(/[\s,]+/g, '-'))}` : null
   };
 }
 
@@ -391,13 +400,16 @@ async function getRecommendedJobs({ candidateSkills = [], candidateRole = "", lo
   const cleanRole = (effectiveRole || "Software Engineer").replace(/[\/]/g, ' ').replace(/\s+/g, ' ').trim();
   const cleanCity = searchCity || "Remote";
   
+  const indeedDomain = isIndia ? "https://in.indeed.com" : "https://www.indeed.com";
+  
   const livePlatformLinks = {
     role: effectiveRole,
     location: location || "Remote",
-    googleJobs: `https://www.google.com/search?q=${encodeURIComponent(cleanRole + " " + cleanCity)}&ibp=htl;jobs`,
-    linkedIn: `https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(cleanRole)}&location=${encodeURIComponent(cleanCity)}`,
-    indeed: `https://www.indeed.com/jobs?q=${encodeURIComponent(cleanRole)}&l=${encodeURIComponent(cleanCity)}`,
-    naukri: isIndia ? `https://www.naukri.com/${encodeURIComponent(cleanRole.toLowerCase().replace(/[\s\/]+/g, '-'))}-jobs-in-${encodeURIComponent(cleanCity.replace(/\s+/g, '-'))}` : null
+    googleJobs: `https://www.google.com/search?q=${encodeURIComponent(cleanRole + " jobs in " + cleanCity)}`,
+    linkedIn: `https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(cleanRole)}&location=${encodeURIComponent(cleanCity)}&f_AL=true`,
+    indeed: `${indeedDomain}/jobs?q=${encodeURIComponent(cleanRole)}&l=${encodeURIComponent(cleanCity)}`,
+    naukri: isIndia ? `https://www.naukri.com/${encodeURIComponent(cleanRole.toLowerCase().replace(/[\s\/]+/g, '-'))}-jobs-in-${encodeURIComponent(cleanCity.replace(/\s+/g, '-'))}` : null,
+    wellfound: `https://wellfound.com/jobs?role=${encodeURIComponent(cleanRole)}`
   };
 
   return {
